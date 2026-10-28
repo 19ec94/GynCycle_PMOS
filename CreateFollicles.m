@@ -16,7 +16,9 @@ fileID = fopen('StartTimesPoiss.txt','w+');
 fprintf(fileID,'Start time\n');
 TotIntervall = te-tb;
 timevec=poissonproc(paraPoi(1),[tb,te]); 
-arraysize=size(timevec);
+% 'numel' instead of 'size' to count the number of elements in an array
+%arraysize=size(timevec);
+arraysize=numel(timevec);
 for i=1:arraysize
     fprintf(fileID,'%f \n',timevec(i));
 end
