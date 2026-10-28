@@ -51,6 +51,11 @@ para=[];
     Folmax  = 22;                     %min. ovulation size %20
 paraOde = [ v; gamma; xi; mu; k; rho; Folmax];
 
+% Set parameters for creating random follicles
+is_seed_set = true;
+rng_seed_number = 42;
+rng_generator = 'twister';
+
 %parameters for poisson distribution
 lambda          = 20/14;           %#Follikels/days
 intervallPoi    = 0.25;            %intervall per day in which follicles appear
@@ -73,6 +78,10 @@ yInitial=importdata(file,delimiterIn,headerlinesIn);
 %initial follicles
 y0Foll = 4;                                                 
 StartValues = [y0Foll; yInitial]';
+
+if (is_seed_set)
+rng(rng_seed_number, rng_generator);
+end
 
 [FSHVec, StartVec] = CreateFollicles(para,paraPoi,tb,te);
 %
