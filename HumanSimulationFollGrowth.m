@@ -17,7 +17,8 @@ LateFollPhase = 0;
 %
 %-----------------------------------------------------------------------
 %% Select Model
-case_name = "NEW_PMOS"; %OLD_NORMAL, OLD_PMOS, NEW_NORMAL, NEW_PMOS
+% User can choose one of the four models (OLD_NORMAL, OLD_PMOS, NEW_NORMAL, NEW_PMOS) to run the simulation.
+case_name = "NEW_PMOS"; 
 %% Select Model-Specific parameters
 switch upper(case_name)
     case 'OLD_NORMAL'
