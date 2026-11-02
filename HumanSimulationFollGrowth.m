@@ -107,7 +107,7 @@ switch upper(case_name)
 
         % Parameters for Poisson distribution
         is_seed_set_ = true;
-        rng_seednumber_ = 34;
+        rng_seednumber_ = 653;
         lambda_ = 3/15;
         intervallPoi_ = 0.25;
 
