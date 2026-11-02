@@ -1,5 +1,5 @@
 %ODE function to solve
-function f=testfun_NormalCycle(t,y,Tovu,Follicles,para,paraOde,Par)
+function f=testfun_NormalCycle(case_name,t,y,Tovu,Follicles,para,paraOde,Par)
 
 %determine number of active follicles
 NumFollicles=size(y,1)-para(2);   
@@ -47,8 +47,22 @@ SumV = sum(x.^paraOde(1));
 
     xiP4=paraOde(3);
     ffsh = (fshrezcomp)^1/(fshrezcomp^1+(fFSH)^1);
+    switch case_name
 
-    X =ffsh*(xiP4-y(i))*y(i)*(gammaP4-(kappaFSH*(SumV-(paraOde(4)*(y(i)^paraOde(1))))));
+        case {'OLD_NORMAL', 'OLD_PMOS'}
+
+            X = ffsh*(xiP4-y(i))*y(i)*(gammaP4-(kappaFSH*(SumV-(paraOde(4)*(y(i)^paraOde(1))))));
+
+        case {'NEW_NORMAL', 'NEW_PMOS'}
+
+            X = ffsh*(xiP4-y(i))*y(i)*(gammaP4-(kappaFSH*(y(i)/xiP4)*(1.0-y(i)/xiP4)*(SumV-(paraOde(4)*(y(i)^paraOde(1))))));
+
+        otherwise
+            error('Unknown case_name: %s', case_name);
+
+    end
+
+
     
     if (para(1)== 1)
          if(X<=0)
