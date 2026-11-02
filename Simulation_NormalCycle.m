@@ -4,7 +4,7 @@
 %%integration starttime, endtime, initial values,
 %%poisson distributed starttimes of the follicles, normal distributed FSH
 %%sensitivities of the follicles, ShowStuff, SaveStuff, DirStuff
-function [res, New, NoNew] = Simulation_NormalCycle(para,paraPoi,paraOde,Par,tb,te,StartValues,StartTimes,FSHVec,ShowStuff,SaveStuff,DirStuff)
+function [res, New, NoNew] = Simulation_NormalCycle(case_name,Tovu_,xlim_values_,ylim_values_,para,paraPoi,paraOde,Par,tb,te,StartValues,StartTimes,FSHVec,ShowStuff,SaveStuff,DirStuff)
 %
 %-----------------------------------------------------------------------
 %
@@ -13,8 +13,9 @@ tspan=[tb,te];
 %variable for the current time
 t=tb;
 %Timepoint of last ovulation, initiated as 14 will be change in the cause
-%of the simulation 
-Tovu = 14;
+%of the simulation
+
+Tovu = Tovu_;
 %
 %-----------------------------------------------------------------------
 %
@@ -133,7 +134,7 @@ while (t<te)
     para(1) = 0; 
     Y=[];
     T=[];
-    [T,Y] = ode15s(@(t,y)testfun_NormalCycle(t,y,Tovu,Follicles,para,paraOde,Par),tspan,y0,options);
+    [T,Y] = ode15s(@(t,y)testfun_NormalCycle(case_name,t,y,Tovu,Follicles,para,paraOde,Par),tspan,y0,options);
     
     %track follicles larger that 15mm for event function 
     count15mm=0;
@@ -201,7 +202,7 @@ while (t<te)
         testyvalues = LastYValues(1:(end-para(2)));
         testyvalues = [testyvalues; Follicle1.Y; LastYValues(end+1-para(2):end)];
         para(1) = 1;
-        testyslope = testfun_NormalCycle(T(end),testyvalues,Tovu,Follicles,para,paraOde,Par);
+        testyslope = testfun_NormalCycle(case_name, T(end),testyvalues,Tovu,Follicles,para,paraOde,Par);
         %if follicle got chance to survive->initiate new follicle and update
         %follicles-vector
         if( testyslope(end-para(2)) > 0 )
@@ -236,7 +237,7 @@ while (t<te)
     ActiveHelp = [];
     %determine actual slope of growth of follicles
     para(1) = 0;
-    res = testfun_NormalCycle(T(end),LastYValues,Tovu,Follicles,para,paraOde,Par);
+    res = testfun_NormalCycle(case_name,T(end),LastYValues,Tovu,Follicles,para,paraOde,Par);
     %reset vector of active FSH sensitivities
     Follicles.ActiveFSHS = [];  
  
@@ -373,6 +374,8 @@ if(ShowStuff)
     h=[h hfsh hTwo hp4 hLH];
     xlabel('time in d','fontsize',15);
     ylabel('follicle diameter in mm','fontsize',15);
+    ylim(ylim_values_);
+    xlim(xlim_values_);
     %fontsize of plot ticks
     ax = gca;
     set(ax, 'Box', 'off' );
