@@ -24,7 +24,8 @@ The simulation model can be selected directly in **`HumanSimulationFollGrowth.m`
 
 ```matlab
 %% Select Model
-case_name = "NEW_PMOS"; % OLD_NORMAL, OLD_PMOS, NEW_NORMAL, NEW_PMOS
+% User can choose one of the four models (OLD_NORMAL, OLD_PMOS, NEW_NORMAL, NEW_PMOS) to run the simulation.
+case_name = "NEW_PMOS"; 
 ```
 The model-specific parameters are automatically assigned using a MATLAB switch statement.
 
