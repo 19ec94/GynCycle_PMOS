@@ -11,11 +11,116 @@ ShowStuff     = 1;
 SaveStuff     = 0;
 DirStuff      = 'Results_LutStim/'; 
 %select type of simulation 
-NormalCycle   = 0;
+NormalCycle   = 1;
 LutStim       = 0;
-LateFollPhase = 1; 
+LateFollPhase = 0; 
 %
 %-----------------------------------------------------------------------
+%% Select Model
+case_name = "NEW_PMOS"; %OLD_NORMAL, OLD_PMOS, NEW_NORMAL, NEW_PMOS
+%% Select Model-Specific parameters
+switch upper(case_name)
+    case 'OLD_NORMAL'
+        % Simulation time
+        te_ = 30 * 3;
+
+        % Parameters for growth equation
+        v_      = 2;
+        gamma_  = 0.035/2;
+        xi_     = 25;
+        mu_     = 1;
+        k_      = 0.09/((xi_)^v_);
+        rho_    = 0.01;
+        Folmax_ = 22;
+
+        % Parameters for Poisson distribution
+        is_seed_set_ = true;
+        rng_seednumber_ = 15;
+        lambda_ = 9/15;
+        intervallPoi_ = 0.25;
+
+        % Simulation settings
+        Tovu_ = -14 * 2;
+        ylim_values_ = [0, 26];
+        xlim_values_ = [0, 30 * 3];
+    case 'OLD_PMOS'
+        % Simulation time
+        te_ = 30 * 12;
+
+        % Parameters for growth equation
+        v_      = 2;
+        gamma_  = 0.035/2;
+        xi_     = 25;
+        mu_     = 0.017/0.09;
+        k_      = 0.09/((xi_)^v_);
+        rho_    = 0.01;
+        Folmax_ = 22;
+
+        % Parameters for Poisson distribution
+        is_seed_set_ = true;
+        rng_seednumber_ = 15;
+        lambda_ = 9/15;
+        intervallPoi_ = 0.25;
+
+        % Simulation settings
+        Tovu_ = -14 * 2 * 24;
+        ylim_values_ = [0, 26];
+        xlim_values_ = [0, 30 * 12];
+
+    case 'NEW_NORMAL'
+
+        % Simulation time
+        te_ = 30 * 3;
+
+        % Parameters for growth equation
+        v_      = 2;
+        gamma_  = 0.035/2;
+        xi_     = 25;
+        mu_     = 1;
+        k_      = 0.17/((xi_)^v_);
+        rho_    = 0.01;
+        Folmax_ = 22;
+
+        % Parameters for Poisson distribution
+        is_seed_set_ = true;
+        rng_seednumber_ = 22;
+        lambda_ = 3/15;
+        intervallPoi_ = 0.25;
+
+        % Simulation settings
+        Tovu_ = -14 * 2;
+        ylim_values_ = [0, 26];
+        xlim_values_ = [0, 30 * 3];
+    case 'NEW_PMOS'
+
+        % Simulation time
+        te_ = 30 * 12;
+
+        % Parameters for growth equation
+        v_      = 2;
+        gamma_  = 0.035/2;
+        xi_     = 25;
+        mu_     = 0.1;
+        k_      = 0.17/((xi_)^v_);
+        rho_    = 0.01;
+        Folmax_ = 22;
+
+        % Parameters for Poisson distribution
+        is_seed_set_ = true;
+        rng_seednumber_ = 34;
+        lambda_ = 3/15;
+        intervallPoi_ = 0.25;
+
+        % Simulation settings
+        Tovu_ = -14 * 2 * 24;
+        ylim_values_ = [0, 26];
+        xlim_values_ = [0, 30 * 12];
+
+
+    otherwise
+        error('Unknown model: %s', model);
+
+end
 % 
 for i = 1:runnum
 %
@@ -23,7 +128,7 @@ for i = 1:runnum
 %   
 %integration time beginning and end
     tb = 0;
-    te = 200;
+    te = te_;
 %
 %-----------------------------------------------------------------------
 % 
@@ -42,23 +147,23 @@ para=[];
     para=para';
 
 %parameter for growth equation
-    v       = 2;                      %fractal dimension 
-    gamma   = 0.035/2;                %growth rate %0.035/2
-    xi      = 25;                     %max. diameter of follicles 
-    mu      = 1;                      %proportion of self harm  
-    k       = 0.065/(xi^v);           %strength of competition %0.065
-    rho     = 0.01;                   %rate of decline
-    Folmax  = 22;                     %min. ovulation size %20
+    v       = v_;                      %fractal dimension 
+    gamma   = gamma_;                %growth rate %0.035/2
+    xi      = xi_;                     %max. diameter of follicles 
+    mu      = mu_;                      %proportion of self harm  
+    k       = k_;           %strength of competition %0.065
+    rho     = rho_;                   %rate of decline
+    Folmax  = Folmax_;                     %min. ovulation size %20
 paraOde = [ v; gamma; xi; mu; k; rho; Folmax];
 
 % Set parameters for creating random follicles
-is_seed_set = true;
-rng_seed_number = 42;
+is_seed_set = is_seed_set_;
+rng_seed_number = rng_seednumber_; 
 rng_generator = 'twister';
 
 %parameters for poisson distribution
-lambda          = 20/14;           %#Follikels/days
-intervallPoi    = 0.25;            %intervall per day in which follicles appear
+lambda          = lambda_ ;           %#Follikels/days
+intervallPoi    = intervallPoi_;            %intervall per day in which follicles appear
 paraPoi = [lambda; intervallPoi];
   
 %load parameter for ODE
@@ -80,7 +185,7 @@ y0Foll = 4;
 StartValues = [y0Foll; yInitial]';
 
 if (is_seed_set)
-rng(rng_seed_number, rng_generator);
+    rng(rng_seed_number, rng_generator);
 end
 
 [FSHVec, StartVec] = CreateFollicles(para,paraPoi,tb,te);
@@ -92,7 +197,7 @@ end
 %-----------------------------------------------------------------------
 %
 if NormalCycle
-    Simulation_NormalCycle(para,paraPoi,paraOde,Par,tb,te,StartValues,StartVec,FSHVec,ShowStuff,SaveStuff,DirStuff);
+    Simulation_NormalCycle(case_name,Tovu_,xlim_values_,ylim_values_,para,paraPoi,paraOde,Par,tb,te,StartValues,StartVec,FSHVec,ShowStuff,SaveStuff,DirStuff);
 end
 %
 %-----------------------------------------------------------------------
